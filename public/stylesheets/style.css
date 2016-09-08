@@ -1,0 +1,8 @@
+.collection-item .delete-course {
+  color: #9e9e9e;
+}
+
+.collection-item .delete-course:hover {
+  cursor: pointer;
+  color: #f44336;
+}
