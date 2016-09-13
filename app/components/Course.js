@@ -10,7 +10,10 @@ class Course extends React.Component {
     this.nameChange = this.nameChange.bind(this);
     this.instructorChange = this.instructorChange.bind(this);
     this.descriptionChange = this.descriptionChange.bind(this);
-    this.state = { name: "", description: "", instructor: "", editMode: true }
+    this.editHover = this.editHover.bind(this);
+    this.editLeave = this.editLeave.bind(this);
+    this.editMode = this.editMode.bind(this);
+    this.state = { name: "", description: "", instructor: "", editMode: false }
   }
 
   componentWillMount() {
@@ -24,7 +27,7 @@ class Course extends React.Component {
         instructor: course.instructor
       });
     });
-  };
+  }
 
   nameChange(e) {
     this.setState({name: e.target.value});
@@ -38,8 +41,34 @@ class Course extends React.Component {
     this.setState({description: e.target.value});
   }
 
-  updateCourse() {
-    console.log("update a course");
+  updateCourse(e) {
+    e.preventDefault();
+    $.ajax({
+      url: `/api/courses/${this.props.params.id}`,
+      type: 'PUT',
+      data: {
+        name: this.refs.name.value,
+        instructor: this.refs.instructor.value,
+        description: this.refs.description.value
+      }
+    }).done(course => {
+      this.setState({ ...course });
+      this.editMode();
+    })
+  }
+
+  editHover() {
+    let editIcon = this.refs.editIcon;
+    editIcon.style.visibility = "visible";
+  }
+
+  editLeave() {
+    let editIcon = this.refs.editIcon;
+    editIcon.style.visibility = "hidden";
+  }
+
+  editMode() {
+    this.setState({editMode: !this.state.editMode});
   }
 
   editFalse() {
@@ -47,7 +76,16 @@ class Course extends React.Component {
 
     return (
       <div className="row">
-        <div className="col m6 offset-m3">
+        <div
+          id="course-wrap"
+          className="col m6 offset-m3"
+          onMouseOver={this.editHover}
+          onMouseLeave={this.editLeave}>
+          <i
+            id="edit-icon"
+            ref="editIcon"
+            className="material-icons grey-text"
+            onClick={this.editMode}>mode_edit</i>
           <h2 className="center-align">{name}</h2>
           <h4 className="center-align thin">Instructor: {instructor}</h4>
           <p>{description}</p>
@@ -61,15 +99,18 @@ class Course extends React.Component {
 
     return (
       <div className="row">
-        <form className="col m4 offset-m4" ref="form">
+        <form className="col m4 offset-m4" ref="form" onSubmit={this.updateCourse}>
           <h5 className="grey-text text-darken-1">Edit Course</h5>
           <input ref="name" value={name} onChange={this.nameChange} />
           <input ref="instructor" value={instructor} onChange={this.instructorChange}/>
-          <textarea id="crsdesc" className="materialize-textarea" ref="description" value={description} onChange={this.descriptionChange}></textarea>
-          <button className="btn blue lighten-2" type="submit">Save Course</button>
+          <textarea id="crsdesc" className="materialize-textarea" ref="description" value={description} onChange={this.descriptionChange} />
+          <button className="btn blue lighten-1" type="submit">Save Course</button>
+          {' '}
+          <span className="btn blue lighten-3" onClick={this.editMode}>Cancel</span>
         </form>
       </div>
     )
+
   }
 
   render() {

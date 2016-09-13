@@ -34,6 +34,17 @@ router.get('/:id', (req, res) => {
   });
 });
 
+router.put('/:id', (req, res) => {
+  Course.findByIdAndUpdate(
+    req.params.id,
+    { $set: {name: req.body.name, instructor: req.body.instructor, description: req.body.description}},
+    {new: true},
+    function(err, course) {
+      res.json(course);
+    }
+  );
+});
+
 router.delete('/:id', (req, res) => {
   Course.findById(req.params.id, (err, course) => {
     course.remove();

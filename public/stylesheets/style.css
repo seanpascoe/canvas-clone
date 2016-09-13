@@ -6,3 +6,15 @@
   cursor: pointer;
   color: #f44336;
 }
+
+#course-wrap {
+  position: relative;
+}
+
+#edit-icon {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  visibility: hidden;
+  cursor: pointer;
+}
